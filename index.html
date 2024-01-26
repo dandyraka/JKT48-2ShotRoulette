@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacha Roulette 2-Shot JKT48</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen items-center justify-center">
+
+    <div class="w-full max-w-3xl p-6 bg-white rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Gacha Roulette 2-Shot JKT48</h2>
+        
+        <label for="memberInput" class="block mb-2">Nama Member JKT48 (pisahkan dengan koma):</label>
+        <textarea id="memberInput" rows="3" class="w-full border p-2" placeholder="Bisa paste pada lineup theater JKT48"></textarea>
+
+        <label for="maxNumber" class="block mb-2">Jumlah Pembeli:</label>
+        <input type="number" id="maxNumber" required class="w-full border p-2 mb-4" placeholder="300">
+
+        <div class="flex justify-between mb-4">
+            <button onclick="resetForm()" class="bg-red-500 text-white py-2 px-4 rounded-full">Reset</button>
+            <button onclick="acakPemenang()" class="bg-blue-500 text-white py-2 px-4 rounded-full">Acak</button>
+        </div>
+
+        <div id="hasilGachaContainer" class="mt-4 hidden">
+            <h3 class="text-lg font-bold mb-2">2-Shot Roulette Theater</h3>
+            <div id="hasilGacha" class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            </div>
+        </div>
+
+        <div id="hasilChekichaContainer" class="mt-4 hidden">
+            <h3 class="text-lg font-bold mb-2">Chekicha</h3>
+            <div id="hasilChekicha" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center">
+        <div class="flex justify-center space-x-4">
+          <a href="https://twitter.com/da_n_dy" target="_blank" class="text-gray-500 hover:text-gray-700">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+          <a href="https://github.com/dandyraka" target="_blank" class="text-gray-700 hover:text-gray-900">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+        <p class="mt-2 text-sm text-gray-500">Made with &hearts; by Dandy</p>
+      </footer>
+    
+    <script>
+        function acakPemenang() {
+            const namaMemberSet = new Set(document.getElementById('memberInput').value.split(',').map(member => member.trim()));
+            let namaMember = [...namaMemberSet].filter(member => member !== "");
+            const minNumber = 1;
+            const maxNumber = parseInt(document.getElementById('maxNumber').value);
+
+            if (isNaN(minNumber) || isNaN(maxNumber) || minNumber >= maxNumber) {
+                alert('Input angka tidak valid!');
+                return;
+            }
+
+            const jumlahMember = Math.max(0, namaMember.length - 2);
+
+            namaMember = shuffleArray(namaMember);
+
+            const hasilGacha = {};
+            const totalPemenang = 48;
+
+            const jumlahPemenangPerMember = Math.floor(totalPemenang / jumlahMember);
+            let sisaPemenang = totalPemenang % jumlahMember;
+
+            for (let i = 0; i < jumlahMember; i++) {
+                const pemenang = [];
+
+                for (let j = 0; j < jumlahPemenangPerMember; j++) {
+                    const angka = Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+                    pemenang.push(angka);
+                }
+
+                if (sisaPemenang > 0) {
+                    const angka = Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+                    pemenang.push(angka);
+                    sisaPemenang--;
+                }
+
+                hasilGacha[namaMember[i]] = pemenang;
+            }
+
+            const chekichaMembers = shuffleArray(namaMember.slice(-2));
+            hasilGacha['Chekicha A'] = [chekichaMembers[0]];
+
+            const chekichaBMember = chekichaMembers[1];
+            const remainingMembers = namaMember.filter(member => member !== chekichaBMember);
+            hasilGacha['Chekicha B'] = [remainingMembers[0]];
+
+            const hasilGachaDiv = document.getElementById('hasilGacha');
+            hasilGachaDiv.innerHTML = '';
+
+            for (const member in hasilGacha) {
+                if (member.startsWith('Chekicha')) {
+                    displayChekichaResults(member, hasilGacha[member].join(', '));
+                } else {
+                    displayResults(member, hasilGacha[member].map(winner => winner.toString()));
+                }
+            }
+
+            const hasilChekichaDiv = document.getElementById('hasilChekicha');
+            hasilChekichaDiv.innerHTML = '';
+
+            displayChekichaResults('Chekicha A', hasilGacha['Chekicha A'].join(', '));
+            displayChekichaResults('Chekicha B', hasilGacha['Chekicha B'].join(', '));
+
+            document.getElementById('hasilGachaContainer').classList.remove('hidden');
+            document.getElementById('hasilChekichaContainer').classList.remove('hidden');
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createCard(member, winners) {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-4 rounded-lg shadow mb-4';
+
+            const memberTitle = document.createElement('p');
+            memberTitle.className = 'font-bold';
+            memberTitle.textContent = member;
+            card.appendChild(memberTitle);
+
+            if (winners.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = 'list-disc pl-4';
+                winners.forEach(winner => {
+                    const li = document.createElement('li');
+                    li.textContent = winner;
+                    ul.appendChild(li);
+                });
+                card.appendChild(ul);
+            } else {
+                const noWinner = document.createElement('p');
+                noWinner.textContent = 'Tidak Ada Pemenang';
+                card.appendChild(noWinner);
+            }
+
+            return card;
+        }
+
+        function displayResults(member, winners) {
+            const hasilGachaDiv = document.getElementById('hasilGacha');
+            const card = createCard(member, winners);
+            hasilGachaDiv.appendChild(card);
+        }
+
+        function displayChekichaResults(chekicha, winner) {
+            const hasilChekichaDiv = document.getElementById('hasilChekicha');
+            const card = createCard(chekicha, [winner]);
+            hasilChekichaDiv.appendChild(card);
+        }
+
+        function resetForm() {
+            document.getElementById('memberInput').value = '';
+            document.getElementById('maxNumber').value = '';
+            document.getElementById('hasilGachaContainer').classList.add('hidden');
+            document.getElementById('hasilChekichaContainer').classList.add('hidden');
+        }
+
+    </script>
+</body>
+</html>
