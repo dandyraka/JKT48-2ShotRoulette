@@ -6,6 +6,7 @@
     <title>Gacha Roulette 2-Shot JKT48</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
 </head>
 <body class="bg-gray-100 flex flex-col min-h-screen items-center justify-center">
 
@@ -20,6 +21,7 @@
 
         <div class="flex justify-between mb-4">
             <button onclick="resetForm()" class="bg-red-500 text-white py-2 px-4 rounded-full">Reset</button>
+            <button onclick="fillExample()" class="bg-green-500 text-white py-2 px-4 rounded-full">Contoh</button>
             <button onclick="acakPemenang()" class="bg-blue-500 text-white py-2 px-4 rounded-full">Acak</button>
         </div>
 
@@ -41,13 +43,14 @@
           <a href="https://twitter.com/da_n_dy" target="_blank" class="text-gray-500 hover:text-gray-700">
             <i class="fa-brands fa-x-twitter"></i>
           </a>
-          <a href="https://github.com/dandyraka" target="_blank" class="text-gray-700 hover:text-gray-900">
+          <a href="https://github.com/dandyraka/JKT48-2ShotRoulette" target="_blank" class="text-gray-500 hover:text-gray-700">
             <i class="fab fa-github"></i>
           </a>
         </div>
         <p class="mt-2 text-sm text-gray-500">Made with &hearts; by Dandy</p>
       </footer>
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         function acakPemenang() {
             const namaMemberSet = new Set(document.getElementById('memberInput').value.split(',').map(member => member.trim()));
@@ -56,7 +59,12 @@
             const maxNumber = parseInt(document.getElementById('maxNumber').value);
 
             if (isNaN(minNumber) || isNaN(maxNumber) || minNumber >= maxNumber) {
-                alert('Input angka tidak valid!');
+                showModal('Input jumlah pembeli valid!');
+                return;
+            }
+
+            if(namaMember.length < 7){
+                showModal('Dikit amat membernya!');
                 return;
             }
 
@@ -115,6 +123,15 @@
             document.getElementById('hasilChekichaContainer').classList.remove('hidden');
         }
 
+        function showModal(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message,
+                confirmButtonText: 'OK'
+            });
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -169,6 +186,10 @@
             document.getElementById('hasilChekichaContainer').classList.add('hidden');
         }
 
+        function fillExample() {
+            document.getElementById('memberInput').value = 'Angelina Christy, Aurellia, Callista Alifia, Cornelia Vanisa, Febriola Sinambela, Flora Shafiq, Freya Jayawardana, Gabriela Abigail, Gendis Mayrannisa, Gita Sekar Andarini, Indah Cahya, Indira Seruni, Jessica Chandra, Kathrina Irene, Raisha Syifa, Shani Indira Natio';
+            document.getElementById('maxNumber').value = '300';
+        }
     </script>
 </body>
 </html>
