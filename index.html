@@ -94,6 +94,9 @@
 
             namaMember = shuffleArray(namaMember);
 
+            const allNumbers = Array.from({ length: maxNumber - minNumber + 1 }, (_, index) => index + minNumber);
+            const shuffledNumbers = shuffleArray(allNumbers);
+
             const hasilGacha = {};
             const totalPemenang = 48;
 
@@ -104,12 +107,12 @@
                 const pemenang = [];
 
                 for (let j = 0; j < jumlahPemenangPerMember; j++) {
-                    const angka = Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+                    const angka = shuffledNumbers.pop();
                     pemenang.push(angka);
                 }
 
                 if (sisaPemenang > 0) {
-                    const angka = Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+                    const angka = shuffledNumbers.pop();
                     pemenang.push(angka);
                     sisaPemenang--;
                 }
