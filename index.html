@@ -95,7 +95,7 @@
                 return;
             }
 
-            if(namaMember.length < 7){
+            if (namaMember.length < 7) {
                 showModal('Dikit amat membernya!');
                 return;
             }
@@ -130,12 +130,15 @@
                 hasilGacha[namaMember[i]] = pemenang;
             }
 
+            // Pilih Chekicha A dan Chekicha B
             const chekichaMembers = shuffleArray(namaMember.slice(-2));
             hasilGacha['Chekicha A'] = [chekichaMembers[0]];
 
             const chekichaBMember = chekichaMembers[1];
-            const remainingMembers = namaMember.filter(member => member !== chekichaBMember);
-            hasilGacha['Chekicha B'] = [remainingMembers[0]];
+            hasilGacha['Chekicha B'] = [chekichaBMember];
+
+            // Hapus anggota "Chekicha B" dari daftar anggota teater
+            namaMember = namaMember.filter(member => member !== chekichaBMember);
 
             const hasilGachaDiv = document.getElementById('hasilGacha');
             hasilGachaDiv.innerHTML = '';
@@ -157,6 +160,7 @@
             document.getElementById('hasilGachaContainer').classList.remove('hidden');
             document.getElementById('hasilChekichaContainer').classList.remove('hidden');
         }
+
 
         function showModal(message) {
             Swal.fire({
